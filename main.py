@@ -56,45 +56,42 @@ for ind in annotations.index:
     logging.debug(annotations['Color'][ind])
     logging.debug(annotations['Size'][ind])
     logging.getLogger().setLevel(logging.INFO)
+    annotation = ''         # Needed if an annotation is empty, otherwise former annotation is re-used
+    if annotations['Text'][ind] == annotations['Text'][ind]:
+        annotation = bytes(annotations['Text'][ind], "utf-8").decode("unicode_escape")
+        # needed to evaluate \n characters as new lines and not as string litteral
+        # ref: https: // stackoverflow.com / questions / 4020539 / process - escape - sequences - in -a - string - in -python
 
     match annotations['Name'][ind]:
         case 'Title':
-            ax.set_title(annotations['Text'][ind],
+            ax.set_title(annotation,
                          color=annotations['Color'][ind],
                          fontsize=annotations['Size'][ind].lower())
 
         case 'TopLeft':
-            if annotations['Text'][ind] == annotations['Text'][ind]:    #test if not NaN (empty excel cell)
-                ax.text(0, 0.98, annotations['Text'][ind],
+            if annotation == annotation:    # test if not NaN (empty excel cell)
+                ax.text(0, 0.98, annotation,
                         transform=ax.transAxes, ha='left', va='top',
                         color=annotations['Color'][ind],
                         fontsize=annotations['Size'][ind].lower(),
                         bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
         case 'TopRight':
-            if annotations['Text'][ind] == annotations['Text'][ind]:    #test if not NaN (empty excel cell)
-                logging.info(str(annotations['Text'][ind]))
-                ax.text(1, 0.98, annotations['Text'][ind],
+            if annotation == annotation:    # test if not NaN (empty excel cell)
+                ax.text(1, 0.98, annotation,
                         transform=ax.transAxes, ha='right', va='top',
                         color=annotations['Color'][ind],
                         fontsize=annotations['Size'][ind].lower(),
                         bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
         case 'BottomLeft':
-            if annotations['Text'][ind] == annotations['Text'][ind]:    #test if not NaN (empty excel cell)
-                a = bytes(annotations['Text'][ind], "utf-8").decode("unicode_escape") #needed to evaluate \n in string as escape char
-                b = 'Plot: OsmMarker by Ynovo\nMap data: OpenStreetMap'
-                print(a)
-                print(b)
-                if a != b:
-                    print("a !=b")
-                    exit()
-                ax.text(0, 0, a,
+            if annotation == annotation:    # test if not NaN (empty excel cell)
+                ax.text(0, 0, annotation,
                         transform=ax.transAxes, ha='left', va='bottom',
                         color=annotations['Color'][ind],
                         fontsize=annotations['Size'][ind].lower(),
                         bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
         case 'BottomRight':
-            if annotations['Text'][ind] == annotations['Text'][ind]:    #test if not NaN (empty excel cell)
-                ax.text(1, 0, annotations['Text'][ind],
+            if annotation == annotation:    # test if not NaN (empty excel cell)
+                ax.text(1, 0, annotation,
                         transform=ax.transAxes, ha='right', va='bottom',
                         color=annotations['Color'][ind],
                         fontsize=annotations['Size'][ind].lower(),
