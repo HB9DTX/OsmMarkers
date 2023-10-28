@@ -11,57 +11,114 @@ import logging
 import matplotlib.pyplot as plt
 import geotiler     # as `pip` package, usage: https://wrobell.dcmod.org/geotiler/usage.html
 
-#logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.INFO)
 logging.info('Program START')
 
 MARKERFILE = 'markers.xlsx'
 
 
-df = pd.read_excel(MARKERFILE, sheet_name='Points')
-logging.debug(df)
-logging.debug(df['Name'][1])
-logging.debug(df['Longitude'])
-logging.debug(df['Latitude'])
+points = pd.read_excel(MARKERFILE, sheet_name='Points')
+logging.debug(points)
+logging.debug(points['Name'][1])
+logging.debug(points['Longitude'])
+logging.debug(points['Latitude'])
 
-Settings = dict(pd.read_excel(MARKERFILE, sheet_name='Settings',  header=None).values)
+settings = dict(pd.read_excel(MARKERFILE, sheet_name='Settings',  header=None).values)
 
-logging.debug(Settings)
-logging.debug(Settings['MinLon'])
-logging.debug(Settings['Title'])
+logging.debug(settings)
+logging.debug(settings['MinLon'])
 
-MAP_BBOX = (Settings['MinLon'], Settings['MinLat'], Settings['MaxLon'], Settings['MaxLat'])  # Map limits; lower left, upper right, (long, lat) # central europe
+annotations = pd.read_excel(MARKERFILE, sheet_name='Annotations', dtype=str)
+logging.debug(annotations)
 
-mm = geotiler.Map(extent=MAP_BBOX, zoom=Settings['Zoom'])
+
+MAP_BBOX = (settings['MinLon'], settings['MinLat'], settings['MaxLon'], settings['MaxLat'])  # Map limits; lower left, upper right, (long, lat) # central europe
+
+logging.getLogger().setLevel(logging.INFO)
+mm = geotiler.Map(extent=MAP_BBOX, zoom=settings['Zoom'])
 img = geotiler.render_map(mm)
 
-# points = list(zip(df['Longitude'], df['Latitude']))
-# x, y = zip(*(mm.rev_geocode(p) for p in points))
-# logging.debug(x)
-# logging.debug(y)
+fig, ax = plt.subplots(tight_layout=True)
+ax.imshow(img)
+for ind in points.index:
+    logging.debug(points['Longitude'][ind])
+    logging.debug(points['Latitude'][ind])
+    x, y = mm.rev_geocode([points['Longitude'][ind], points['Latitude'][ind]])
+    ax.scatter(x, y, c=points['Color'][ind], edgecolor=points['Color'][ind], s=points['Size'][ind], alpha=0.9, label='all stations')
 
-
-fig3, ax3 = plt.subplots(tight_layout=True)
-ax3.imshow(img)
-for ind in df.index:
-    logging.debug(df['Longitude'][ind])
-    logging.debug(df['Latitude'][ind])
-    x, y = mm.rev_geocode([df['Longitude'][ind], df['Latitude'][ind]])
-    ax3.scatter(x, y, c=df['Color'][ind], edgecolor=df['Color'][ind], s=df['Size'][ind], alpha=0.9, label='all stations')
-ax3.set_title(Settings['Title'])
 plt.axis('off')
+logging.getLogger().setLevel(logging.INFO)
+for ind in annotations.index:
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.debug(annotations['Name'][ind])
+    logging.debug(annotations['Text'][ind])
+    logging.debug(annotations['Color'][ind])
+    logging.debug(annotations['Size'][ind])
+    logging.getLogger().setLevel(logging.INFO)
+
+    match annotations['Name'][ind]:
+        case 'Title':
+            ax.set_title(annotations['Text'][ind],
+                         color=annotations['Color'][ind],
+                         fontsize=annotations['Size'][ind].lower())
+
+        case 'TopLeft':
+            if annotations['Text'][ind] == annotations['Text'][ind]:    #test if not NaN (empty excel cell)
+                ax.text(0, 0.98, annotations['Text'][ind],
+                        transform=ax.transAxes, ha='left', va='top',
+                        color=annotations['Color'][ind],
+                        fontsize=annotations['Size'][ind].lower(),
+                        bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
+        case 'TopRight':
+            if annotations['Text'][ind] == annotations['Text'][ind]:    #test if not NaN (empty excel cell)
+                logging.info(str(annotations['Text'][ind]))
+                ax.text(1, 0.98, annotations['Text'][ind],
+                        transform=ax.transAxes, ha='right', va='top',
+                        color=annotations['Color'][ind],
+                        fontsize=annotations['Size'][ind].lower(),
+                        bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
+        case 'BottomLeft':
+            if annotations['Text'][ind] == annotations['Text'][ind]:    #test if not NaN (empty excel cell)
+                a = bytes(annotations['Text'][ind], "utf-8").decode("unicode_escape") #needed to evaluate \n in string as escape char
+                b = 'Plot: OsmMarker by Ynovo\nMap data: OpenStreetMap'
+                print(a)
+                print(b)
+                if a != b:
+                    print("a !=b")
+                    exit()
+                ax.text(0, 0, a,
+                        transform=ax.transAxes, ha='left', va='bottom',
+                        color=annotations['Color'][ind],
+                        fontsize=annotations['Size'][ind].lower(),
+                        bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
+        case 'BottomRight':
+            if annotations['Text'][ind] == annotations['Text'][ind]:    #test if not NaN (empty excel cell)
+                ax.text(1, 0, annotations['Text'][ind],
+                        transform=ax.transAxes, ha='right', va='bottom',
+                        color=annotations['Color'][ind],
+                        fontsize=annotations['Size'][ind].lower(),
+                        bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
+
+    #if annotations['Name'][ind] == 'Title:':
+    #    ax.set_title(annotations['Text'][ind])
+
+
+#ax.set_title(settings['Test'])
+
 #annotation = 'Total number of stations in log: ' + str(contest.qsoList.shape[0])
-#ax3.text(1, 0, annotation, transform=ax3.transAxes, ha='right', va='bottom',
+#ax.text(1, 0, annotation, transform=ax.transAxes, ha='right', va='bottom',
 #         bbox=dict(boxstyle='square', facecolor='white'))
 
-annotation = Settings['Annotation']
-if annotation != '':
-    ax3.annotate(annotation, xy=(1, 0), xycoords='axes fraction', fontsize='xx-small', color='black', transform=ax3.transAxes, ha='right', va='bottom')
-    #ax3.legend(annotation)
-annotation = 'Plot: OsmMarker by Ynovo\nMap data: OpenStreetMap.'
-ax3.text(0, 0, annotation, fontsize='xx-small', color='blue', transform=ax3.transAxes, ha='left', va='bottom')
-# bbox=dict(boxstyle='square', facecolor='white'))
-#    plt.savefig('Map.png', bbox_inches='tight')
+# annotation = settings['Annotation']
+# if annotation != '':
+#     ax.annotate(annotation, xy=(1, 0), xycoords='axes fraction', fontsize='xx-small', color='black', transform=ax.transAxes, ha='right', va='bottom')
+#     #ax.legend(annotation)
+# annotation = 'Plot: OsmMarker by Ynovo\nMap data: OpenStreetMap.'
+# ax.text(0.5, 0.5, annotation, fontsize='xx-small', color='blue', transform=ax.transAxes, ha='left', va='bottom')
+# logging.info(annotation)
+# # bbox=dict(boxstyle='square', facecolor='white'))
+# #    plt.savefig('Map.png', bbox_inches='tight')
 plt.show()
 plt.close()
 
