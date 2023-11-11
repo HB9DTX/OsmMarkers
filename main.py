@@ -47,7 +47,7 @@ for ind in points.index:                        # plot each point on the map
     logging.debug(points['Latitude'][ind])
     x, y = mm.rev_geocode([points['Longitude'][ind], points['Latitude'][ind]])
     ax.scatter(x, y, c=points['Color'][ind], edgecolor=points['Color'][ind], s=points['Size'][ind],
-               alpha=0.9) #, label='all stations')
+               marker=points['MarkerStyle'][ind], alpha=0.9) #, label='all stations')
 
 plt.axis('off')
 logging.getLogger().setLevel(logging.INFO)

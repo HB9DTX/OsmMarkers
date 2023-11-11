@@ -1,8 +1,19 @@
 # OsmMarkers
-Several websites allow to place a marker on OpenStreetMap. When it comes to displaying several markers with different properties it's getting more complicated.
-This scripts uses an excel file as input to display any number of markers on a map. Output is a png file
+## Rationale
+It is very easy to place a single marker on OpenStreetMap, directly form the website. When it comes to displaying several different markers with different properties (colors, shapes, size) it's getting more complicated.
+Written by Ynovo Yves OESCH, November 2023
 
-Excel file contains:
+
+## Usage
+1) Edit markers.xlsx
+2) Run script
+
+### Input
+Excel file (markers.xlsx) containing information such as 
 - Marker data (coordinates, color, size,...)
-- Text annotations
-- Map boundaries
+- Up to 4 text annotations (one in each corner of the map)
+- Map boundaries, zoom factor
+Parameters usage is described in the "Instructions" tab of the Excel file.
+
+### Output
+Map.png file
