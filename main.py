@@ -46,8 +46,9 @@ for ind in points.index:                        # plot each point on the map
     logging.debug(points['Longitude'][ind])
     logging.debug(points['Latitude'][ind])
     x, y = mm.rev_geocode([points['Longitude'][ind], points['Latitude'][ind]])
-    ax.scatter(x, y, c=points['Color'][ind], edgecolor=points['Color'][ind], s=points['Size'][ind],
-               marker=points['MarkerStyle'][ind], alpha=0.9) #, label='all stations')
+    ax.scatter(x, y, c=points['Color'][ind].lower(), edgecolor=points['Color'][ind].lower(),
+               s=points['Size'][ind], marker=points['MarkerStyle'][ind]
+               , alpha=0.9) #, label='all stations')
 
 plt.axis('off')
 logging.getLogger().setLevel(logging.INFO)
@@ -67,39 +68,39 @@ for ind in annotations.index:                   # plot each annotation
     match annotations['Name'][ind]:
         case 'Title':
             ax.set_title(annotation,
-                         color=annotations['Color'][ind],
+                         color=annotations['Color'][ind].lower(),
                          fontsize=annotations['Size'][ind].lower())
 
         case 'TopLeft':
             if annotation == annotation:    # test if not NaN (empty Excel cell)
                 ax.text(0, 0.98, annotation,
                         transform=ax.transAxes, ha='left', va='top',
-                        color=annotations['Color'][ind],
+                        color=annotations['Color'][ind].lower(),
                         fontsize=annotations['Size'][ind].lower(),
                         bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
         case 'TopRight':
             if annotation == annotation:    # test if not NaN (empty Excel cell)
                 ax.text(1, 0.98, annotation,
                         transform=ax.transAxes, ha='right', va='top',
-                        color=annotations['Color'][ind],
+                        color=annotations['Color'][ind].lower(),
                         fontsize=annotations['Size'][ind].lower(),
                         bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
         case 'BottomLeft':
             if annotation == annotation:    # test if not NaN (empty Excel cell)
                 ax.text(0, 0, annotation,
                         transform=ax.transAxes, ha='left', va='bottom',
-                        color=annotations['Color'][ind],
+                        color=annotations['Color'][ind].lower(),
                         fontsize=annotations['Size'][ind].lower(),
                         bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
         case 'BottomRight':
             if annotation == annotation:    # test if not NaN (empty Excel cell)
                 ax.text(1, 0, annotation,
                         transform=ax.transAxes, ha='right', va='bottom',
-                        color=annotations['Color'][ind],
+                        color=annotations['Color'][ind].lower(),
                         fontsize=annotations['Size'][ind].lower(),
                         bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
 
-# #    plt.savefig('Map.png', bbox_inches='tight')
+plt.savefig('Map.png', bbox_inches='tight')
 plt.show()
 plt.close()
 
