@@ -1,7 +1,7 @@
 # OsmMarkers
 ## Rationale
 It is very easy to place a single marker on OpenStreetMap, directly form the website. When it comes to displaying several different markers with different properties (colors, shapes, size) it's getting more complicated.
-Written by Ynovo Yves OESCH, November 2023
+
 
 
 ## Usage
@@ -17,3 +17,6 @@ Parameters usage is described in the "Instructions" tab of the Excel file.
 
 ### Output
 Map.png file
+
+## About
+Written by Ynovo Yves OESCH, November 2023
