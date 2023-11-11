@@ -4,9 +4,11 @@
 # Documentation in README.md
 #
 # 2022_10_25_Initial version
+# Refer to git commits for history
 
-import pandas as pd  # sudo apt-get install python3-pandas or `sudo pip install pandas` to reduce 500MB apt(8) download
-                     # requires also openpyxl as dependency to access .xlsx files
+import pandas as pd
+# if not available: sudo apt-get install python3-pandas or `sudo pip install pandas` to reduce 500MB apt(8) download
+# requires also openpyxl as dependency to access .xlsx files
 import logging
 import matplotlib.pyplot as plt
 import geotiler     # as `pip` package, usage: https://wrobell.dcmod.org/geotiler/usage.html
@@ -16,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG)
 logging.info('Program START')
 
 MARKERFILE = 'markers.xlsx'     # File containing markers info (coordinates, color,...)
-
+MAPFILE = 'Map.png'
 
 points = pd.read_excel(MARKERFILE, sheet_name='Points')
 logging.debug(points)
@@ -47,8 +49,8 @@ for ind in points.index:                        # plot each point on the map
     logging.debug(points['Latitude'][ind])
     x, y = mm.rev_geocode([points['Longitude'][ind], points['Latitude'][ind]])
     ax.scatter(x, y, c=points['Color'][ind].lower(), edgecolor=points['Color'][ind].lower(),
-               s=points['Size'][ind], marker=points['MarkerStyle'][ind]
-               , alpha=0.9) #, label='all stations')
+               s=points['Size'][ind], marker=points['MarkerStyle'][ind],
+               alpha=0.9)
 
 plt.axis('off')
 logging.getLogger().setLevel(logging.INFO)
@@ -62,8 +64,8 @@ for ind in annotations.index:                   # plot each annotation
     annotation = ''         # Needed if an annotation is empty, otherwise former annotation is re-used
     if annotations['Text'][ind] == annotations['Text'][ind]:
         annotation = bytes(annotations['Text'][ind], "utf-8").decode("unicode_escape")
-        # needed to evaluate \n characters as new lines and not as string litteral
-        # ref: https: // stackoverflow.com / questions / 4020539 / process - escape - sequences - in -a - string - in -python
+        # needed to evaluate \n characters as new lines and not as string literal
+        # ref: https://stackoverflow.com/questions/4020539/process-escape-sequences-in-a-string-in-python
 
     match annotations['Name'][ind]:
         case 'Title':
@@ -100,7 +102,7 @@ for ind in annotations.index:                   # plot each annotation
                         fontsize=annotations['Size'][ind].lower(),
                         bbox=dict(boxstyle='square', facecolor='white', linewidth=0))
 
-plt.savefig('Map.png', bbox_inches='tight')
+plt.savefig(MAPFILE, bbox_inches='tight')
 plt.show()
 plt.close()
 
